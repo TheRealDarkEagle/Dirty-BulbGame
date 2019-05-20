@@ -24,6 +24,10 @@ class Frame extends JFrame {
 
 	private static Frame frame_instance;
 	private ArrayList<BulbButton> bulbList;
+	private int counter;
+	private JButton exit;
+	private JButton restart;
+	private boolean isCounting;
 
 	private Frame() {
 		this.init();
@@ -31,7 +35,29 @@ class Frame extends JFrame {
 		this.build();
 	}
 
+	private void resetInstance() {
+		frame_instance = new Frame();
+	}
+
 	private void init() {
+		isCounting = false;
+		exit = new JButton("EXIT GAME");
+		exit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				System.exit(0);
+			}
+		});
+		restart = new JButton("RESTART");
+		restart.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				resetInstance();
+			}
+
+		});
+		this.setUndecorated(true);
 		this.setSize(600, 600);
 		this.setTitle("Dity BulbGame dude");
 		this.bulbList = new ArrayList<>();
@@ -54,6 +80,9 @@ class Frame extends JFrame {
 		if (y != 4) {
 			this.bulbList.get(index + 5).changeState();
 		}
+		if (isCounting) {
+			System.out.println(++counter);
+		}
 	}
 
 	private void config() {
@@ -73,19 +102,20 @@ class Frame extends JFrame {
 			}
 			x++;
 		}
+		c.anchor = GridBagConstraints.SOUTH;
 		for (int i = 0; i < 25; i++) {
 			if (new Random().nextBoolean()) {
 				this.clickBulbs(this.bulbList.get(i).getPoint());
 			}
 		}
-
-	}
-
-	private void clickRndBlb() {
-
 	}
 
 	private void build() {
+
+		this.getContentPane().add(restart);
+		this.getContentPane().add(exit);
+		isCounting = true;
+		counter = 0;
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 	}
@@ -118,8 +148,6 @@ class BulbButton extends JButton implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println("gedrückt");
-		System.out.println(e.getActionCommand());
 		Frame.getInstance().clickBulbs(this.point);
 	}
 
@@ -128,6 +156,7 @@ class BulbButton extends JButton implements ActionListener {
 	}
 
 	public void changeState() {
+
 		if (this.on) {
 			this.setBackground(Color.pink);
 			this.on = false;
